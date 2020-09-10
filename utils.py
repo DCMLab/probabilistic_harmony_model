@@ -4,6 +4,25 @@ import pandas as pd
 import torch
 import matplotlib.pyplot as plt
 
+# data preprocessing
+# ------------------
+
+def isneighbour(p1,p2):
+    return abs(p1-p2)%7 in [2,5]
+
+def notetype(pitch, pitches, chordtones):
+    hasneighbour = any(isneighbour(p, pitch) for p in pitches) # any uses iterator here
+    hasctneighbour = any(isneighbour(p, pitch) and (p in chordtones) for p in pitches) 
+    
+    if not hasneighbour: # if there is no identifiable neighbour, tone has to be chord tone
+        return 'chordtone'
+    elif pitch in chordtones and not hasctneighbour:
+        return 'chordtone'
+    elif not pitch in chordtones and hasctneighbour:
+        return 'ornament'
+    else:
+        return 'unknown'
+
 # pitch class range
 # -----------------
 
