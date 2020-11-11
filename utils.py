@@ -3,6 +3,88 @@ import numpy as np
 import pandas as pd
 import torch
 import matplotlib.pyplot as plt
+from fractions import Fraction as frac
+import os.path as path
+import pitchtypes as pt
+
+# loading dcml corpus data
+# ------------------------
+
+str2inttuple = lambda l: tuple() if l == '' else tuple(int(s) for s in l.split(', '))
+def int2bool(s):
+    try:
+        return bool(int(s))
+    except:
+        return s
+
+CONVERTERS = {
+    'added_tones': str2inttuple,
+    'act_dur': frac,
+    'chord_tones': str2inttuple,
+    'duration': frac,
+    'globalkey_is_minor': int2bool,
+    'localkey_is_minor': int2bool,
+    'mc_offset': frac,
+    'mc_onset': frac,
+    'mn_onset': frac,
+    'next': str2inttuple,
+    'nominal_duration': frac,
+    #'offset': frac,
+    #'onset': frac,
+    'scalar': frac,
+}
+
+STRING = 'string' # not str
+
+DTYPES = {
+    'alt_label': STRING,
+    'barline': STRING,
+    'bass_note': 'Int64',
+    'breaks': STRING,
+    #'cadence': STRING,
+    #'cadences_id': 'Int64',
+    'changes': STRING,
+    'chord': STRING,
+    'chord_id': int,
+    'chord_type': STRING,
+    'dont_count': 'Int64',
+    'figbass': STRING,
+    'form': STRING,
+    'globalkey': STRING,
+    #'gracenote': STRING,
+    #'harmonies_id': 'Int64',
+    'keysig': int,
+    'label': STRING,
+    'localkey': STRING,
+    'mc': int,
+    'midi': int,
+    'mn': int,
+    #'notes_id': 'Int64',
+    'numbering_offset': 'Int64',
+    'numeral': STRING,
+    'pedal': STRING,
+    #'playthrough': int,
+    'phraseend': STRING,
+    'relativeroot': STRING,
+    'repeats': STRING,
+    'root': 'Int64',
+    #'special': STRING,
+    'staff': int,
+    'tied': 'Int64',
+    'timesig': STRING,
+    'tpc': int,
+    'voice': int,
+    #'voices': int,
+    'volta': 'Int64'
+}
+
+def load_dcml_tsv(corpusdir, piece, kind):
+    filename = path.join(corpusdir, kind, piece + '.tsv')
+    return pd.read_csv(filename, sep='\t', converters=CONVERTERS, dtype=DTYPES)
+
+def name2tpc(name):
+    pitch = name[0].upper() + name[1:]
+    return pt.SpelledPitchClass(pitch).fifth_steps()
 
 # data preprocessing
 # ------------------
