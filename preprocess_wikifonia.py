@@ -5,6 +5,74 @@ from utils import notetype
 import os.path as path
 import muspy
 
+# chord types
+# -----------
+
+# maps MusicXML chord kinds to chord tones in fifths
+# e.g. [0,1,4] = [P1, P5, M3]
+CHORD_TYPES = {
+    # triads
+    "major": [0,1,4],
+    "minor": [0,1,-3],
+    "augmented": [0,4,8],
+    "diminished": [0,-3,-6],
+    # sevenths
+    "dominant": [0,1,4,-2],
+    "major-seventh": [0,1,4,5],
+    "minor-seventh": [0,1,-3,-2],
+    "diminished-seventh": [0,-3,-6,-9], # full-diminished
+    "augmented-seventh": [0,4,8,-2],
+    "half-diminished": [0,-3,-6,-2],
+    "major-minor": [0,1,-3,5],
+    # sixths
+    "major-sixth": [0,1,4,3],
+    "minor-sixth": [0,1,-3,3], # it's a bit unclear if M6 or m6 is meant (probably M6)
+    # ninths
+    "dominant-ninth": [0,1,4,-2,2],
+    "major-ninth": [0,1,4,5,2],
+    "minor-ninth": [0,1,-3,-2,2],
+    # 11ths
+    "dominant-11th": [0,1,4,-2,2,-1],
+    "major-11th": [0,1,4,5,2,-1],
+    "minor-11th": [0,1,-3,-2,2,-1],
+    # 13ths
+    "dominant-13th": [0,1,4,-2,2,-1,3],
+    "major-13th": [0,1,4,5,2,-1,3],
+    "minor-13th": [0,1,-3,-2,2,-1,3],
+    # suspended / other
+    "suspended-second": [0,1,2],
+    "suspended-fourth": [0,1,-1], # should this just point to dominant? 4th is probably an ornament.
+    "power" : [0,1]
+    # rest does not occur or is ignored
+}
+
+CHORD_NORMAL_TYPES = {
+    "min": "minor",
+    "aug": "augmented",
+    "sus47": "dominant", # suspension is assumed to be an ornament here
+    "7sus": "dominant",
+    "dim7": "half-diminished",
+    "dim": "diminished",
+    "dominant-seventh": "dominant",
+    "minor-major": "major-minor", # presumably
+    "minMaj7": "major-minor",
+    "min6": "minor-sixth",
+    "9": "major-ninth",
+    "6": "major-sixth",
+    "7": "dominant",
+    "maj7": "major-seventh",
+    "min7": "minor-seventh",
+    "maj9": "major-ninth",
+    "min9": "minor-ninth",
+    "maj69": "major-13th",
+    "m7b5": "half-diminished",
+}
+
+# others, some unclear
+# pedal
+# min9
+# minor-major
+
 # helper functions
 # ----------------
 
@@ -29,14 +97,24 @@ def spellpc(pitch):
     fifths = diafifths + int(pitch.alter) * 7
     return fifths
 
-def getchordtones(label):
+def getchordtones(chordtype):
     """
     Returns the chord tones that belong to each label
     """
-    return [spellpc(tone.pitch) for tone in label]
+    return CHORD_TYPES[chordtype]
 
 def getchordtype(label):
-    return label.chordKind
+    """
+    Returns the normalized chord type for a given label.
+    If the type given in the label is no known, None is returned.
+    """
+    kind = label.chordKind
+    if kind in CHORD_TYPES:
+        return kind
+    elif kind in CHORD_NORMAL_TYPES:
+        return CHORD_NORMAL_TYPES[kind]
+    else:
+        return None
 
 # extracting chords
 # -----------------
@@ -69,13 +147,13 @@ def getchords(piece):
     harm = getannotations(piece) # parse chord symbols, calls function getharmonies
     harmonies = [] # start from empty list
     for label, chord_onset, chord_offset in harm: # iterate over all elements of harm 
-        
-        if label.root() == None:
+
+        chordtype = getchordtype(label)
+        if label.root() == None or chordtype == None:
             continue
-        else:
-            root = spellpc(label.root())
-        
-        chordtones = getchordtones(label)    
+
+        root = spellpc(label.root())
+        chordtones = getchordtones(chordtype)    
         
         notes = piece.flat.getElementsByClass(m21.note.Note)
         pitches = [spellpc(note.pitch) for note in notes
@@ -83,7 +161,7 @@ def getchords(piece):
             
         notes = [(pitch-root, notetype(pitch, pitches, chordtones)) for pitch in pitches]
              
-        harmonies.append((getchordtype(label), notes))
+        harmonies.append((chordtype, notes))
         
     return(harmonies)
 
