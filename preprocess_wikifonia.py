@@ -2,7 +2,7 @@ import music21 as m21
 import glob
 import tqdm
 from utils import notetype
-import os.path as path
+from os import path, makedirs
 import muspy
 
 # chord types
@@ -199,7 +199,8 @@ def writechords(filename, chords):
 if __name__ == "__main__":
     # ensure dataset is present
     print("downloading data...")
-    muspy.WikifoniaDataset(path.join("data", "wikifonia"))
+    makedirs(path.join("data","wikifonia"),exist_ok=True)
+    muspy.WikifoniaDataset(path.join("data", "wikifonia"), download_and_extract=True)
     allchords = []
 
     print("extracting chords from pieces...")
