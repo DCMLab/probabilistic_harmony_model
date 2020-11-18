@@ -57,7 +57,7 @@ CHORD_NORMAL_TYPES = {
     "minor-major": "major-minor", # presumably
     "minMaj7": "major-minor",
     "min6": "minor-sixth",
-    "9": "major-ninth",
+    "9": "dominant-ninth",
     "6": "major-sixth",
     "7": "dominant",
     "maj7": "major-seventh",
