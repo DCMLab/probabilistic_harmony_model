@@ -154,6 +154,7 @@ def get_chords_from_files(filelist):
     Returns the combined chords for several pieces.
     Takes a list of subdirectory x piece pairs.
     """
+    files = []
     offset = 0
     all_chords = None
     for folder, file in tqdm.tqdm(filelist):
@@ -161,6 +162,7 @@ def get_chords_from_files(filelist):
             chords, max_id = get_chords_from_piece(folder, file, offset)
             all_chords = chords if (all_chords is None) else all_chords.append(chords)
             offset = max_id + 1
+            files.append(f"{folder} {file}");
         except FileNotFoundError:
             print(f'file not found for {folder} {file}')
             continue
@@ -173,6 +175,11 @@ def get_chords_from_files(filelist):
         except:
             print(f'error while processing {folder} {file}')
             #raise Exception(f"failed file: {folder} {file}")
+    print(f"got {max_id} chords and {len(all_chords)} notes from the {len(files)} files listed in preprocess_dcml.log")
+    with open("preprocess_dcml.log","w") as f:
+      print(f"got {max_id} chords and {len(all_chords)} notes from the following {len(files)} files",file=f)
+      f.write("\n".join(files))
+
     return all_chords.reset_index(drop=True)
 
 def get_corpus_pieces(corpus):

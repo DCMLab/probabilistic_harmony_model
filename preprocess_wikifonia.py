@@ -146,6 +146,7 @@ def getchords(piece):
     
     harm = getannotations(piece) # parse chord symbols, calls function getharmonies
     harmonies = [] # start from empty list
+    nnotes = 0
     for label, chord_onset, chord_offset in harm: # iterate over all elements of harm 
 
         chordtype = getchordtype(label)
@@ -160,10 +161,11 @@ def getchords(piece):
                    if getonset(note) < chord_offset and getoffset(note) > chord_onset] 
             
         notes = [(pitch-root, notetype(pitch, pitches, chordtones)) for pitch in pitches]
+        nnotes += len(notes)
              
         harmonies.append((chordtype, notes))
         
-    return(harmonies)
+    return(harmonies,nnotes)
 
 def readfile(filename):
     """
@@ -202,15 +204,23 @@ if __name__ == "__main__":
     makedirs(path.join("data","wikifonia"),exist_ok=True)
     muspy.WikifoniaDataset(path.join("data", "wikifonia"), download_and_extract=True)
     allchords = []
+    files = []
+    nnotes = 0
 
     print("extracting chords from pieces...")
     for file in tqdm.tqdm(glob.glob(path.join("data", "wikifonia", "Wikifonia", "*.mxl*"))):
         try:
-            chords = readchords(file)
+            chords,n = readchords(file)
             allchords += chords
+            files.append(file)
+            nnotes += n
         except:
             print("Could not read chords from ", file)
 
+    print(f"got {len(allchords)} chords and {nnotes} notes from the {len(files)} files listed in preprocess_wikifonia.log")
+    with open("preprocess_wikifonia.log","w") as f:
+      print(f"got {len(allchords)} chords and {nnotes} notes from the following {len(files)} files:",file=f)
+      f.write("\n".join(files))
     print("writing chords...")
     writechords(path.join("data", "wikifonia.tsv"), allchords)
     print("done.")
