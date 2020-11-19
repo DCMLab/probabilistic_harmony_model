@@ -142,9 +142,22 @@ def chord_tensor(fifths, types):
 
 def load_csv(fn, sep='\t'):
     df = pd.read_csv(fn, sep=sep).dropna()
-    # some notes are too far away from the root for our model, so we drop them
-    in_range = (df['fifth'] >= -fifth_range) & (df['fifth'] <= fifth_range)
-    return df[in_range]
+    # some notes are too far away from the root for our model,
+    # so we wrap them to their closest enharmonic equivalent
+    df['fifth'] = wrap_fifths(df.fifth)
+    return df
+
+def wrap_fifths(fifths):
+    fifths = fifths.copy()
+    too_high = (fifths > fifth_range)
+    too_low = (fifths < -fifth_range)
+
+    fth = fifths[too_high]
+    fifths.loc[too_high] = fth - (np.ceil((fth - fifth_range) / 12.).astype(int) * 12)
+
+    ftl = fifths[too_low]
+    fifths.loc[too_low] = ftl + (np.ceil(-(ftl + fifth_range) / 12.).astype(int) * 12)
+    return fifths
 
 # plotting etc.
 # -------------
