@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from fractions import Fraction as frac
 import os.path as path
 import pitchtypes as pt
+import math
 
 # loading dcml corpus data
 # ------------------------
@@ -68,7 +69,7 @@ DTYPES = {
     'relativeroot': STRING,
     'repeats': STRING,
     'root': 'Int64',
-    #'special': STRING,
+    'special': STRING,
     'staff': int,
     'tied': 'Int64',
     'timesig': STRING,

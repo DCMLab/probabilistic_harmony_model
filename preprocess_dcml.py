@@ -22,7 +22,10 @@ chord_types = {
     'mM7': [0,1,-3,5],
     '%7': [0,-3,-6,-2],
     'o7': [0,-3,-6,-9],
-    '+7': [0,4,8,-2]
+    '+7': [0,4,8,-2],
+    'It':  [0, -10, -6],     # (F#, Ab, C)     over F# = (P1, d3, d5)
+    'Fr':  [0, 4,   -6, -2], # (D, F#, Ab, C)  over D  = (P1, M3, d5, m7)
+    'Ger': [0, -10, -6, -9], # (F#, Ab, C, Eb) over F# = (P1, d3, d5, d7)
 }
 
 # corpus directory
@@ -81,6 +84,10 @@ def load_dfs(corpus, piece):
     harmonies = harmonies[~harmonies.chord.isnull()]
     harmonies['total_onset'] = total_onsets(harmonies, measures)
     harmonies['total_offset'] = np.append(harmonies.total_onset.values[1:], max_offset)
+    if 'special' in harmonies.columns:
+        harmonies['actual_chord_type'] = harmonies.special.fillna(harmonies.chord_type)
+    else:
+        harmonies['actual_chord_type'] = harmonies.chord_type
     
     return notes, harmonies
 
@@ -115,7 +122,7 @@ def get_chords(notes, harmonies, id_offset=0):
         # get info about the current harmony
         on = harmonies.total_onset[ih]
         off = harmonies.total_offset[ih]
-        label = harmonies.chord_type[ih]
+        label = harmonies.actual_chord_type[ih]
         root = harmonies.root[ih] + key
 
         # compute the corresponding notes, their pitches, and their note types
@@ -172,8 +179,8 @@ def get_chords_from_files(filelist):
         except (KeyboardInterrupt):
             print("interrupted by user, exiting.")
             quit()
-        except:
-            print(f'error while processing {folder} {file}')
+        except Exception as e:
+            print(f'error while processing {folder} {file}:\n{e}')
             #raise Exception(f"failed file: {folder} {file}")
     print(f"got {max_id} chords and {len(all_chords)} notes from the {len(files)} files listed in preprocess_dcml.log")
     with open("preprocess_dcml.log","w") as f:
