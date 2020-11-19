@@ -46,7 +46,7 @@ CHORD_TYPES = {
     # rest does not occur or is ignored
 }
 
-CHORD_NORMAL_TYPES = {
+CHORD_ALT_TYPES = {
     "min": "minor",
     "aug": "augmented",
     "sus47": "dominant", # suspension is assumed to be an ornament here
@@ -68,10 +68,14 @@ CHORD_NORMAL_TYPES = {
     "m7b5": "half-diminished",
 }
 
-# others, some unclear
-# pedal
-# min9
-# minor-major
+# ignored chord types
+# - pedal
+# - min/G
+# - none
+# - /A
+# - other
+# - augmented-ninth
+# - '' (empty)
 
 # helper functions
 # ----------------
@@ -111,8 +115,8 @@ def getchordtype(label):
     kind = label.chordKind
     if kind in CHORD_TYPES:
         return kind
-    elif kind in CHORD_NORMAL_TYPES:
-        return CHORD_NORMAL_TYPES[kind]
+    elif kind in CHORD_ALT_TYPES:
+        return CHORD_ALT_TYPES[kind]
     else:
         return None
 
@@ -147,10 +151,17 @@ def getchords(piece):
     harm = getannotations(piece) # parse chord symbols, calls function getharmonies
     harmonies = [] # start from empty list
     nnotes = 0
+    unknown_types = set()
+    
     for label, chord_onset, chord_offset in harm: # iterate over all elements of harm 
 
         chordtype = getchordtype(label)
-        if label.root() == None or chordtype == None:
+
+        if chordtype == None:
+            unknown_types.add(label.chordKind)
+            continue
+        
+        if label.root() == None:
             continue
 
         root = spellpc(label.root())
@@ -165,7 +176,7 @@ def getchords(piece):
              
         harmonies.append((chordtype, notes))
         
-    return(harmonies,nnotes)
+    return harmonies, nnotes, unknown_types
 
 def readfile(filename):
     """
@@ -206,21 +217,24 @@ if __name__ == "__main__":
     allchords = []
     files = []
     nnotes = 0
+    unknown_types = set()
 
     print("extracting chords from pieces...")
     for file in tqdm.tqdm(glob.glob(path.join("data", "wikifonia", "Wikifonia", "*.mxl*"))):
         try:
-            chords,n = readchords(file)
+            chords, n, uk = readchords(file)
             allchords += chords
             files.append(file)
             nnotes += n
-        except:
-            print("Could not read chords from ", file)
+            unknown_types = unknown_types.union(uk)
+        except Exception as e:
+            print(f"Could not read chords from {file}:\n{e}")
 
-    print(f"got {len(allchords)} chords and {nnotes} notes from the {len(files)} files listed in preprocess_wikifonia.log")
     with open("preprocess_wikifonia.log","w") as f:
       print(f"got {len(allchords)} chords and {nnotes} notes from the following {len(files)} files:",file=f)
       f.write("\n".join(files))
+    print(f"got {len(allchords)} chords and {nnotes} notes from the {len(files)} files listed in preprocess_wikifonia.log")
+    print("The following chord types could not be interpreted and are ignored:", unknown_types)
     print("writing chords...")
     writechords(path.join("data", "wikifonia.tsv"), allchords)
     print("done.")
