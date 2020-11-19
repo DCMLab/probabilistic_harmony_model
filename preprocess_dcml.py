@@ -130,13 +130,15 @@ def get_chords(notes, harmonies, id_offset=0):
         pitches = notes.tpc[inotes].values - root
         chord_tones = chord_types[label]
         note_types = [notetype(p, pitches, chord_tones) for p in pitches]
+        if(len(pitches) == 0):
+            continue
 
         # add everything to the dataframe columns
-        chordids = np.append(chordids, np.repeat(i + id_offset, len(pitches)))
+        chordids = np.append(chordids, np.repeat(highest_id, len(pitches)))
         labels   = np.append(labels, np.repeat(label, len(pitches)))
         fifths   = np.append(fifths, pitches)
         types    = np.append(types, note_types)
-        highest_id = i + id_offset
+        highest_id += 1 
 
     # create the result dataframe
     chords_df = pd.DataFrame({
@@ -168,7 +170,7 @@ def get_chords_from_files(filelist):
         try:
             chords, max_id = get_chords_from_piece(folder, file, offset)
             all_chords = chords if (all_chords is None) else all_chords.append(chords)
-            offset = max_id + 1
+            offset = max_id
             files.append(f"{folder} {file}");
         except FileNotFoundError:
             print(f'file not found for {folder} {file}')
