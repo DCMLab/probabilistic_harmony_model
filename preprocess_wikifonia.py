@@ -170,6 +170,8 @@ def getchords(piece):
         notes = piece.flat.getElementsByClass(m21.note.Note)
         pitches = [spellpc(note.pitch) for note in notes
                    if getonset(note) < chord_offset and getoffset(note) > chord_onset] 
+        if(len(pitches) == 0):
+            continue
             
         notes = [(pitch-root, notetype(pitch, pitches, chordtones)) for pitch in pitches]
         nnotes += len(notes)
