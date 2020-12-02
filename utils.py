@@ -94,6 +94,16 @@ def isneighbour(p1,p2):
     return abs(p1-p2)%7 in [2,5]
 
 def notetype(pitch, pitches, chordtones):
+    """
+    Returns the estimated type of an observed pitch ('chordtone', 'ornament', or 'unknown')
+    given the set of all observed pitches and the set of nominal chord tones.
+
+    A pitch is an actual chord tone with certainty iff it either does not have any neighbor
+    or it is a nominal chord tone (part of the prototype) and does not have any nominal chord tone neighbors.
+    A pitch is an ornament with certainty
+    iff it is the neighbor of a nominal chord tone but is not a nominal chord tone itself.
+    Otherwise, the type is considered to be unknown.
+    """
     hasneighbour = any(isneighbour(p, pitch) for p in pitches) # any uses iterator here
     hasctneighbour = any(isneighbour(p, pitch) and (p in chordtones) for p in pitches) 
     
