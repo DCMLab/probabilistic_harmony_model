@@ -191,7 +191,12 @@ def readchords(filename):
     """
     Reads a MusicXML file and returns the contained chords.
     """
-    return getchords(readfile(filename))
+    (harmonies, nnotes, unknown_types) = getchords(readfile(filename))
+    if(len(harmonies) > 0):
+        return harmonies, nnotes, unknown_types
+    else:
+        raise Exception("No chords extracted")
+    
 
 # saving chords
 # -------------
