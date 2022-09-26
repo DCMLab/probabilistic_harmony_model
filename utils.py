@@ -139,10 +139,10 @@ def index_to_fifth(index):
     """Turns an index into a LoF pitch class"""
     return index - fifth_range
 
-def chord_tensor(fifths, types):
+def chord_tensor(fifths, types, device="cpu"):
     """Takes a list of notes as fifths and a list of corresponding note types."""
     notetype = {'chordtone': 0, 'ornament': 1, 'unknown': 2}
-    chord = torch.zeros((3, get_npcs()))
+    chord = torch.zeros((3, get_npcs()), device=device)
     for (fifth, t) in zip(fifths, types):
         chord[notetype[t], fifth_to_index(fifth)] += 1
     return chord.reshape((1,-1))
@@ -154,7 +154,7 @@ def load_csv(fn, sep='\t'):
     df = pd.read_csv(fn, sep=sep).dropna()
     # some notes are too far away from the root for our model,
     # so we wrap them to their closest enharmonic equivalent
-    df['fifth'] = wrap_fifths(df.fifth)
+    df['fifth'] = wrap_fifths(df.fifth.astype(int))
     return df
 
 def wrap_fifths(fifths):

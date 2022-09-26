@@ -23,7 +23,7 @@ CHORD_TYPES = {
     "diminished-seventh": [0,-3,-6,-9], # full-diminished
     "augmented-seventh": [0,4,8,-2],
     "half-diminished": [0,-3,-6,-2],
-    "major-minor": [0,1,-3,5],
+    "major-minor": [0,1,-3,5], # minor third, major seventh
     # sixths
     "major-sixth": [0,1,4,3],
     "minor-sixth": [0,1,-3,3], # it's a bit unclear if M6 or m6 is meant (probably M6)
@@ -52,10 +52,12 @@ CHORD_ALT_TYPES = {
     "sus47": "dominant", # suspension is assumed to be an ornament here
     "7sus": "dominant",
     "dim7": "half-diminished",
+    "half-diminished-seventh": "half-diminished",
     "dim": "diminished",
     "dominant-seventh": "dominant",
     "minor-major": "major-minor", # presumably
     "minMaj7": "major-minor",
+    "minor-major-seventh": "major-minor",
     "min6": "minor-sixth",
     "9": "dominant-ninth",
     "6": "major-sixth",
@@ -180,18 +182,21 @@ def getchords(piece):
         
     return harmonies, nnotes, unknown_types
 
-def readfile(filename):
+def readfile(filename, iszip=True):
     """
     Reads filename as a MusicXML file, returns a music21 stream.
     """
-    am = m21.converter.ArchiveManager(filename, archiveType='zip')
-    return m21.converter.parse(am.getData(), format="musicxml")
+    if iszip:
+        am = m21.converter.ArchiveManager(filename, archiveType='zip')
+        return m21.converter.parse(am.getData(), format="musicxml")
+    else:
+        return m21.converter.parse(filename)
 
-def readchords(filename):
+def readchords(filename, iszip=True):
     """
     Reads a MusicXML file and returns the contained chords.
     """
-    (harmonies, nnotes, unknown_types) = getchords(readfile(filename))
+    (harmonies, nnotes, unknown_types) = getchords(readfile(filename, iszip=iszip))
     if(len(harmonies) > 0):
         return harmonies, nnotes, unknown_types
     else:
