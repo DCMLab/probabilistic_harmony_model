@@ -48,4 +48,5 @@ Its output is stored in `results/clustering/`.
 This notebook is intended to be run with GPU support
 and therefore contains instructions for how to run it on Google Colab.
 
-The plots shown in the paper are generated using `plots.ipynb`.
+The plots shown in the paper are generated using `plots.ipynb`
+and can be found in `plots/` directory.
