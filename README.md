@@ -26,6 +26,13 @@ The dataset has been processed using `preprocess_ewld.py`
 and the resulting chord data can be found in `data/ewld.tsv`.
 A list of used pieces is recorded in `preprocess_ewld.log`.
 
+### Wikifonia (obsolete)
+
+We have included data and results on the original Wikifonia dataset
+(which is not available anymore).
+They follow the same format as the EWLD data, but with `wikifonia` replacing `ewld` in filenames.
+These results are not used in the paper.
+
 ## Code and Results
 
 The dependencies for the preprocessing and model code are listed in `requirements.txt`.
