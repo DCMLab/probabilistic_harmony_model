@@ -40,12 +40,12 @@ An example for how to set up a virtual environment
 and installying a corresponding jupyter kernel
 is given in `init.sh`.
 
-The main model is implemented in `model_paper.ipynb`.
-Its output is stored in `dcml_params.{json,pt}` and `ewld_params.{json,pt}`.
+The main model is implemented in `model.ipynb`.
+Its output is stored in `results/dcml_params.{json,pt}` and `results/ewld_params.{json,pt}`.
 
-The cluster model is implemented in `model_paper_clustering.ipynb`.
-Its output is stored in `cluster_experiments/results/params/`.
+The cluster model is implemented in `model_clustering.ipynb`.
+Its output is stored in `results/clustering/`.
 This notebook is intended to be run with GPU support
 and therefore contains instructions for how to run it on Google Colab.
 
-The plots shown in the paper are generated using `plots_paper.ipynb`.
+The plots shown in the paper are generated using `plots.ipynb`.
