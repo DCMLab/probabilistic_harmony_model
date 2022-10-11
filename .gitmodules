@@ -1,0 +1,6 @@
+[submodule "data/dcml_corpora"]
+	path = data/dcml_corpora
+	url = https://github.com/DCMLab/dcml_corpora.git
+[submodule "data/romantic_piano_corpus"]
+	path = data/romantic_piano_corpus
+	url = git@github.com:DCMLab/romantic_piano_corpus.git

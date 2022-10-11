@@ -3,7 +3,9 @@ import numpy as np
 #import mozart_piano_sonatas.utils.feature_matrices as fm
 from utils import notetype, load_dcml_tsv, name2tpc
 import glob
-import os.path as path
+#import os.path as path
+from pathlib import Path
+#from os import path, pardir
 import tqdm
 
 # predefined values
@@ -184,8 +186,8 @@ def get_chords_from_files(filelist):
         except Exception as e:
             print(f'error while processing {folder} {file}:\n{e}')
             #raise Exception(f"failed file: {folder} {file}")
-    print(f"got {max_id} chords and {len(all_chords)} notes from the {len(files)} files listed in preprocess_dcml.log")
-    with open("preprocess_dcml.log","w") as f:
+    print(f"got {max_id} chords and {len(all_chords)} notes from the {len(files)} files listed in data/preprocess_dcml.log")
+    with open(Path("data", "preprocess_dcml.log"),"w") as f:
       print(f"got {max_id} chords and {len(all_chords)} notes from the following {len(files)} files",file=f)
       f.write("\n".join(files))
 
@@ -195,10 +197,13 @@ def get_corpus_pieces(corpus):
     """
     Returns a list of pieces in a corpus as subdirectory x piece pairs.
     """
-    dirs = glob.glob(path.join(corpus, 'annotations', '*'))
-    files = [(d, path.splitext(path.basename(f))[0])
+    corpus = Path(corpus)
+    print("fetching pieces from", corpus)
+    dirs = [d.parent for d in corpus.glob('*/harmonies')]
+    print(dirs)
+    files = [(d, f.stem)
              for d in dirs
-             for f in glob.glob(path.join(d, 'notes', '*.tsv'))]
+             for f in d.glob('harmonies/*.tsv')]
     return files
 
 # script
@@ -206,9 +211,12 @@ def get_corpus_pieces(corpus):
 
 if __name__ == "__main__":
     print("scanning corpus...")
-    pieces = get_corpus_pieces(path.join("data", "dcml_corpora"))
+    pieces_dcml = get_corpus_pieces(Path("data", "dcml_corpora"))
+    pieces_romantic = get_corpus_pieces(Path("data", "romantic_piano_corpus"))
+    pieces = pieces_dcml + pieces_romantic
+    print(len(pieces), "pieces")
     print("extracting chords from pieces...")
     all_chords = get_chords_from_files(pieces)
     print("writing chords...")
-    all_chords.to_csv(path.join('data', 'dcml.tsv'), sep='\t', index=False)
+    all_chords.to_csv(Path('data', 'dcml.tsv'), sep='\t', index=False)
     print("done.")
