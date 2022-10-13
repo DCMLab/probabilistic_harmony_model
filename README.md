@@ -50,3 +50,4 @@ and therefore contains instructions for how to run it on Google Colab.
 
 The plots shown in the paper are generated using `plots.ipynb`
 and can be found in `plots/` directory.
+Plots of the remaining posterior distributions are shown in [`additional-results.pdf`](additional-results.pdf).
