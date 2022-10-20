@@ -245,7 +245,7 @@ if __name__ == "__main__":
     with open(path.join("data", "preprocess_wikifonia.log"),"w") as f:
       print(f"got {len(allchords)} chords and {nnotes} notes from the following {len(files)} files:",file=f)
       f.write("\n".join(files))
-    print(f"got {len(allchords)} chords and {nnotes} notes from the {len(files)} files listed in data/preprocess_wikifonia.log")
+    print(f"got {len(allchords)} chords and {nnotes} notes from the {len(files)} files listed in data/preprocess_wikifonia.txt")
     print("The following chord types could not be interpreted and are ignored:", unknown_types)
     print("writing chords...")
     writechords(path.join("data", "wikifonia.tsv"), allchords)

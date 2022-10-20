@@ -91,7 +91,11 @@ def name2tpc(name):
 # ------------------
 
 def isneighbour(p1,p2):
-    return abs(p1-p2)%7 in [2,5]
+    """
+    Returns True if p1 and p2 could be neighbors,
+    that is, if the interval between them is either a chromatic semitone or a generic second.
+    """
+    return (abs(p1-p2)%7 in [2,5]) or (abs(p1-p2) == 7)
 
 def notetype(pitch, pitches, chordtones):
     """
