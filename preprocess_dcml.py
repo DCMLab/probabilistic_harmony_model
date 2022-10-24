@@ -186,8 +186,8 @@ def get_chords_from_files(filelist):
         except Exception as e:
             print(f'error while processing {folder} {file}:\n{e}')
             #raise Exception(f"failed file: {folder} {file}")
-    print(f"got {max_id} chords and {len(all_chords)} notes from the {len(files)} files listed in data/preprocess_dcml.log")
-    with open(Path("data", "preprocess_dcml.log"),"w") as f:
+    print(f"got {max_id} chords and {len(all_chords)} notes from the {len(files)} files listed in data/preprocess_dcml.txt")
+    with open(Path("data", "preprocess_dcml.txt"),"w") as f:
       print(f"got {max_id} chords and {len(all_chords)} notes from the following {len(files)} files",file=f)
       f.write("\n".join(files))
 

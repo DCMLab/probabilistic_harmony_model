@@ -13,7 +13,7 @@ Parts of this corpus have already been published ([Beethoven String Quartets](ht
 the remaining subcorpora are work in progress and therefore not public.
 
 The dataset has been preprocessed using `preprocess_dcml.py`.
-A list of used pieces is recorded in `preprocess_dmcl.log`.
+A list of used pieces is recorded in `data/preprocess_dmcl.txt`.
 The processed chord data can be found in `data/dcml.tsv`.
 
 ### EWLD
@@ -24,14 +24,7 @@ The input data have been obtained using
 
 The dataset has been processed using `preprocess_ewld.py`
 and the resulting chord data can be found in `data/ewld.tsv`.
-A list of used pieces is recorded in `preprocess_ewld.log`.
-
-### Wikifonia (obsolete)
-
-We have included data and results on the original Wikifonia dataset
-(which is not available anymore).
-They follow the same format as the EWLD data, but with `wikifonia` replacing `ewld` in filenames.
-These results are not used in the paper.
+A list of used pieces is recorded in `data/preprocess_ewld.txt`.
 
 ## Code and Results
 
