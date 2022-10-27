@@ -3,6 +3,8 @@
 This repository contains the code and data used for the paper
 "Chord Types and Ornamentation".
 
+Authors: Christoph Finkensiep, Petter Ericson, Sebastian Klassmann, Martin Rohrmeier.
+
 ## Data
 
 ### ABC+ (DCML)
@@ -44,3 +46,11 @@ and therefore contains instructions for how to run it on Google Colab.
 The plots shown in the paper are generated using `plots.ipynb`
 and can be found in `plots/` directory.
 Plots of the remaining posterior distributions are shown in [`additional-results.pdf`](additional-results.pdf).
+
+## Licences
+
+All code in this repository (i.e., all `.py` and `.ipynb` files, `init.sh`, and `requirements.txt`)
+is licensed under the BSD 3-clause license (see `LICENSE-BSD`).
+The licenses of the DCML datasets are provided in the respective subdirectories under `data/`.
+All remaining documents, images, and data files are licensed under the CC-BY 4.0 license
+(see `LICENSE-CCBY`).
