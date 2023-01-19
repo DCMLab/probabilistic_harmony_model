@@ -7,6 +7,7 @@ import glob
 from pathlib import Path
 #from os import path, pardir
 import tqdm
+import multiprocessing as mp
 
 # predefined values
 # -----------------
@@ -96,7 +97,7 @@ def load_dfs(corpus, piece):
 # extracting chords
 # -----------------
 
-def get_chords(notes, harmonies, id_offset=0):
+def get_chords(notes, harmonies):
     """
     Computes chords as label x note pairs for a piece (given by its notes and chord labels).
     Pairs that belong to the same chord get the same id, starting from id_offset.
@@ -110,7 +111,7 @@ def get_chords(notes, harmonies, id_offset=0):
     fifths   = np.empty(0, dtype=int)
     types    = np.empty(0, dtype=str)
     # running id counter
-    highest_id = id_offset
+    current_id = 0
 
     # for checking whether the chord label is empty at some point
     chord_is_null = harmonies.chord.isnull()
@@ -136,11 +137,11 @@ def get_chords(notes, harmonies, id_offset=0):
             continue
 
         # add everything to the dataframe columns
-        chordids = np.append(chordids, np.repeat(highest_id, len(pitches)))
+        chordids = np.append(chordids, np.repeat(current_id, len(pitches)))
         labels   = np.append(labels, np.repeat(label, len(pitches)))
         fifths   = np.append(fifths, pitches)
         types    = np.append(types, note_types)
-        highest_id += 1 
+        current_id += 1
 
     # create the result dataframe
     chords_df = pd.DataFrame({
@@ -148,47 +149,61 @@ def get_chords(notes, harmonies, id_offset=0):
         'label': labels,
         'fifth': fifths,
         'type': types})
-    return chords_df, highest_id
+    return chords_df, current_id # current_id = number of chords
 
 # processing files
 # ----------------
 
-def get_chords_from_piece(folder, file, id_offset=0):
+def get_chords_from_piece(piece):
     """
     Same as get_chords, but takes a corpus subdirectory and a piece id
     """
-    notes, harmonies = load_dfs(folder, file)
-    return get_chords(notes, harmonies, id_offset)
+    folder, file = piece
+    name = f"{folder} {file}"
+    try:
+        notes, harmonies = load_dfs(folder, file)
+        chords, n_chords = get_chords(notes, harmonies)
+        return chords, n_chords, name
+    except FileNotFoundError:
+        print(f'file not found for {name}')
+        return None
+    except ValueError:
+        print(f'ValueError in {name}')
+        return None
+    except (KeyboardInterrupt):
+        print("interrupted by user, exiting.")
+        quit()
+    except Exception as e:
+        print(f'error while processing {name}:\n{e}')
+        return None
+        #raise Exception(f"failed file: {folder} {file}")
 
 def get_chords_from_files(filelist):
     """
     Returns the combined chords for several pieces.
     Takes a list of subdirectory x piece pairs.
     """
+
+    # load all files and extract chords (slow, parallelized)
+    with mp.Pool() as pool:
+        outputs = list(tqdm.tqdm(pool.imap(get_chords_from_piece, filelist), total = len(filelist)))
+
+    # collect results in one large dataframe (fast)
+    all_chords = pd.DataFrame()
     files = []
-    offset = 0
-    all_chords = None
-    for folder, file in tqdm.tqdm(filelist):
-        try:
-            chords, max_id = get_chords_from_piece(folder, file, offset)
-            all_chords = chords if (all_chords is None) else all_chords.append(chords)
-            offset = max_id
-            files.append(f"{folder} {file}");
-        except FileNotFoundError:
-            print(f'file not found for {folder} {file}')
-            continue
-        except ValueError:
-            print(f'ValueError in {folder} {file}')
-            continue
-        except (KeyboardInterrupt):
-            print("interrupted by user, exiting.")
-            quit()
-        except Exception as e:
-            print(f'error while processing {folder} {file}:\n{e}')
-            #raise Exception(f"failed file: {folder} {file}")
-    print(f"got {max_id} chords and {len(all_chords)} notes from the {len(files)} files listed in data/preprocess_dcml.txt")
+    total_chords = 0
+    for output in tqdm.tqdm(outputs):
+        if output is not None:
+            chords, n_chords, name = output
+            chords['chordid'] += total_chords
+            all_chords = pd.concat((all_chords, chords))
+            total_chords += n_chords
+            files.append(name)
+
+    # write log
+    print(f"got {total_chords} chords and {len(all_chords)} notes from the {len(files)} files listed in data/preprocess_dcml.txt")
     with open(Path("data", "preprocess_dcml.txt"),"w") as f:
-      print(f"got {max_id} chords and {len(all_chords)} notes from the following {len(files)} files",file=f)
+      print(f"got {total_chords} chords and {len(all_chords)} notes from the following {len(files)} files",file=f)
       f.write("\n".join(files))
 
     return all_chords.reset_index(drop=True)
@@ -201,9 +216,10 @@ def get_corpus_pieces(corpus):
     print("fetching pieces from", corpus)
     dirs = [d.parent for d in corpus.glob('*/harmonies')]
     print(dirs)
-    files = [(d, f.stem)
-             for d in dirs
-             for f in d.glob('harmonies/*.tsv')]
+    # sort for consistent order
+    files = sorted((d, f.stem)
+                   for d in dirs
+                   for f in d.glob('harmonies/*.tsv'))
     return files
 
 # script

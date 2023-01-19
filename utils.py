@@ -85,7 +85,7 @@ def load_dcml_tsv(corpusdir, piece, kind):
 
 def name2tpc(name):
     pitch = name[0].upper() + name[1:]
-    return pt.SpelledPitchClass(pitch).fifth_steps()
+    return pt.SpelledPitchClass(pitch).fifths()
 
 # data preprocessing
 # ------------------

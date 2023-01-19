@@ -227,6 +227,9 @@ def try_load_file(filename):
     try:
         chords, n, uk = loadchords(filename, iszip=True)
         return (chords, n, uk, filename)
+    except (KeyboardInterrupt):
+        print("interrupted by user, exiting.")
+        quit()
     except Exception as e:
         print(f"Could not read chords from {filename}:\n{e}")
         return None
@@ -239,9 +242,10 @@ if __name__ == "__main__":
     unknown_types = set()
 
     print("extracting chords from pieces...")
-    all_files = list(Path("data", "ewld", "dataset").glob("**/*.mxl"))
+    # sort paths for for consistent order
+    all_files = sorted(Path("data", "ewld", "dataset").glob("**/*.mxl"))
     print(f"found {len(all_files)} files.")
-    with mp.Pool(3) as pool:
+    with mp.Pool() as pool:
         outputs = list(tqdm.tqdm(pool.imap(try_load_file, all_files), total = len(all_files)))
     print("collecting outputs")
     for output in tqdm.tqdm(outputs):
@@ -258,5 +262,5 @@ if __name__ == "__main__":
     print(f"got {len(allchords)} chords and {nnotes} notes from the {len(processed_files)} files listed in data/preprocess_ewld.txt")
     print("The following chord types could not be interpreted and are ignored:", unknown_types)
     print("writing chords...")
-    prep.writechords(Path("data", "ewld.tsv"), allchords)
+    writechords(Path("data", "ewld.tsv"), allchords)
     print("done.")
