@@ -177,16 +177,24 @@ def wrap_fifths(fifths):
 # -------------
 
 def play_chord(amplitudes, T=2, sr=22050):
-    pcs = np.arange(-fifth_range, fifth_range+1)
-    tones = 262. * np.exp(pcs * np.log(1.5) % np.log(2))
-    tones = np.concatenate((0.5*tones, tones, 2*tones))
+    # tone frequencies based on line of fifths
+    tpcs = np.arange(-fifth_range, fifth_range+1)
+    tones = 262. * np.exp(tpcs * np.log(1.5) % np.log(2))
+
+    # # tone frequencies based on 12TET
+    # npcs = tpcs * 7 % 12
+    # tones = 262 * np.exp(npcs * np.log(2) / 12)
+
     n = int(T*sr)
     t = np.linspace(0, T, n)
     sines = np.sin(2 * np.pi * tones[:, np.newaxis] * t[np.newaxis, :])
     amps = amplitudes / amplitudes.sum()
-    mix = 0.1 * np.dot(amps.repeat(3), sines) # ear safety first
-#     plt.plot(mix[0:1000])
-#     plt.show()
+
+    # # add octave above and below
+    # tones = np.concatenate((0.5*tones, tones, 2*tones))
+    # amps = amps.repeat(3)
+
+    mix = 0.1 * np.dot(amps, sines) # ear safety first
     display(Audio(mix, rate=sr, normalize=False))
 
 
@@ -201,4 +209,4 @@ def plot_profile(chordtones, ornaments, name):
     ax.set_xticks(x)
     ax.set_xticklabels(labels)
     ax.legend()
-    plt.show()
+    plt.show(block=False)

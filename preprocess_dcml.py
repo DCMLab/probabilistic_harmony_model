@@ -2,7 +2,6 @@ import pandas as pd
 import numpy as np
 #import mozart_piano_sonatas.utils.feature_matrices as fm
 from utils import notetype, load_dcml_tsv, name2tpc
-import glob
 #import os.path as path
 from pathlib import Path
 #from os import path, pardir
