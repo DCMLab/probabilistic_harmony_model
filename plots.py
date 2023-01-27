@@ -159,7 +159,7 @@ def plot_note_rate_post(ax, params, width=None):
 def plot_note_rates(params1, params2, width=None):
     fig, (ax1, ax2) = plt.subplots(1,2, figsize=(9,3), sharey=True)
     plot_note_rate_post(ax1, params1, width=width)
-    ax1.set_title("DCML")
+    ax1.set_title("ABC+")
     plot_note_rate_post(ax2, params2, width=width)
     ax2.set_title("EWLD")
     fig.tight_layout()
@@ -286,7 +286,7 @@ def plot_p_icts():
     
     plot_p_ict(ax1, dcml_params, dcml_chordtypes_alt, selection_dcml,
                lower=0.74, upper=0.92)
-    ax1.set_title('DCML', x=0.05, y=0.85)
+    ax1.set_title('ABC+', x=0.05, y=0.85)
         
     plot_p_ict(ax2, ewld_params, ewld_chordtypes_alt, selection_ewld,
                lower=0.62, upper=0.89)
@@ -313,7 +313,7 @@ def plot_chord_type_dist(ax, params, labels):
 def plot_chord_type_dists():
     fig, (ax1, ax2) = plt.subplots(1,2,figsize=(9,6))
     plot_chord_type_dist(ax1, dcml_params, dcml_chordtypes_alt)
-    ax1.set_title("Chord Type Posterior (DCML)")
+    ax1.set_title("Chord Type Posterior (ABC+)")
     plot_chord_type_dist(ax2, ewld_params, ewld_chordtypes_alt)
     ax2.set_title("Chord Type Posterior (EWLD)")
     fig.tight_layout()
@@ -496,16 +496,23 @@ ewld_outputs = replay_clustering("ewld", 9)
 
 
 # %%
-def plot_cluster_probs(probs, name):
+def plot_cluster_probs(probs, name, ax):
     n = len(probs)
-    sns.barplot(x=[f"{n-i}" for i in range(n)], y=probs)
-    plt.xlabel('number of clusters')
-    plt.ylabel('model probability')
-    plt.title(f"Cluster Model Probabilities ({name})")
-    plt.show(block=False)
+    ax.bar([f"{n-i}" for i in range(n)], probs)
+    #sns.barplot(x=, y=probs, ax=ax)
+    ax.set_xlabel('number of clusters')
+    ax.set_ylabel('model probability')
+    ax.set_title(name, x=0.1, y=0.85)
 
-plot_cluster_probs(dcml_cluster_probs, "ABC+")
-plot_cluster_probs(ewld_cluster_probs, "EWLD")
+def plot_all_cluster_probs():
+    fig, ax = plt.subplots(1, 2, figsize=(9,3), sharey=True)
+    plot_cluster_probs(dcml_cluster_probs, "ABC+", ax[0])
+    plot_cluster_probs(ewld_cluster_probs, "EWLD", ax[1])
+    fig.tight_layout()
+    saveplot("cluster-probs", fig)
+    plt.show(block=False)
+    
+plot_all_cluster_probs()
 
 # %%
 dcml_best_i, dcml_best_p = max(enumerate(dcml_cluster_probs), key=lambda x: x[1])
@@ -548,15 +555,15 @@ def plot_p_ict_cluster(ax, params, harmtypes, cluster_assignment, lower=0, upper
               loc='upper left')
 
 def plot_p_icts_clusters(dcml_cluster, ewld_cluster):
-    fig, (ax1, ax2) = plt.subplots(2, figsize=(9,6))
+    fig, (ax1, ax2) = plt.subplots(2, figsize=(9,4))
     
     plot_p_ict_cluster(ax1, dcml_cluster['params'], dcml_chordtypes_common, dcml_cluster['cluster_assignment'],
                        lower=0.735, upper=0.915)
-    ax1.set_title('ABC+', x=0.05, y=0.85)
+    ax1.set_title('ABC+', x=0.05, y=0.75)
         
     plot_p_ict_cluster(ax2, ewld_cluster['params'], ewld_chordtypes_common, ewld_cluster['cluster_assignment'],
                        lower=0.62, upper=0.89)
-    ax2.set_title('EWLD', x=0.05, y=0.85)
+    ax2.set_title('EWLD', x=0.05, y=0.75)
     
 #     ax1.legend([f"{i+1} - {dcml_chordtypes_alt[i]}" for i in selection_dcml],
 #                loc='upper right', ncol=2, framealpha=1)

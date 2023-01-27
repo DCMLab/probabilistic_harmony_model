@@ -86,7 +86,7 @@ can be found in [`additional-results.pdf`](additional-results.pdf).
 
 ## Licences
 
-All code in this repository (i.e., all `.py` and `.ipynb` files, `init.sh`, and `requirements.txt`)
+All code in this repository (i.e., all `*.py` and `*.ipynb` files, `init.sh`, and `requirements*.txt`)
 is licensed under the BSD 3-clause license (see `LICENSE-BSD`).
 The licenses of the DCML datasets are provided in the respective subdirectories under `data/`.
 All remaining documents, images, and data files are licensed under the CC-BY 4.0 license
