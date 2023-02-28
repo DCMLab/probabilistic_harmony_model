@@ -33,7 +33,7 @@
 data_path = "."
 
 # use a path like this for google colab/drive:
-# data_path = "/content/drive/Shareddrives/DCML/Projects/ERC/harmony-ornamentation"
+# data_path = "/content/drive/Shareddrives/<YourOrganization>/harmony-ornamentation"
 
 # %% id="Uh1Hgg6E6MM2"
 import torch

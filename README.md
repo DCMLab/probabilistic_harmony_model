@@ -1,9 +1,7 @@
 # Chord Types and Ornamentation
 
 This repository contains the code and data used for the paper
-"Chord Types and Ornamentation".
-
-Authors: Christoph Finkensiep, Petter Ericson, Sebastian Klassmann, Martin Rohrmeier.
+"Chord Types and Ornamentation – A Bayesian Learning Model of Extended Chord Profiles".
 
 ## Data
 
@@ -25,16 +23,8 @@ Includes
   - Schumann, Kinderszenen
   - Tchaikovsky, The Seasons
 
-The exact version of the data is included in this repository as git submodules
+The exact version of the data is included in this repository
 under `data/dcml_corpora` and `data/romantic_piano_corpus`.
-To check out the submodules, either clone the repository with `--recures-submodules`:
-```shell
-$ git clone --recurse-submodules https://github.com/DCMLab/probabilistic_harmony_model
-```
-or run the following command after cloning:
-```shell
-git submodule update --init --recursive
-```
 
 The DCML dataset can be preprocessed using `preprocess_dcml.py`.
 The processed chord data can be found in `data/dcml.tsv`.
