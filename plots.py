@@ -6,7 +6,7 @@
 #       extension: .py
 #       format_name: percent
 #       format_version: '1.3'
-#       jupytext_version: 1.14.4
+#       jupytext_version: 1.16.1
 #   kernelspec:
 #     display_name: dcml-harmony-and-ornamentation
 #     language: python
@@ -354,7 +354,7 @@ def plot_example_profile():
     x = np.arange(15)
     width=0.4
     ax.bar(x - width/2, chordtones, width, label='chord tones')
-    ax.bar(x + width/2, ornaments, width, label='ornaments')
+    ax.bar(x + width/2, ornaments, width, label='figuration tones')
     ax.set_title("Example Profile")
     ax.set_xticks(x)
     ax.set_xticklabels(labels, rotation='vertical', va='top', family='monospace', usetex=False, size='small')
@@ -374,7 +374,7 @@ def plot_common_chords(indices):
         name = chordtypes_common[ind]
         plot_profile(axs[i,0], dcml_params, np.where(dcml_chordtypes_alt == name)[0][0], name+" (ABC+)")
         plot_profile(axs[i,1], ewld_params, np.where(ewld_chordtypes_alt == name)[0][0], name+" (EWLD)")
-    axs[0,1].legend(labels=['chordtones', 'ornaments'], framealpha=1)
+    axs[0,1].legend(labels=['chord tones', 'figuration tones'], framealpha=1)
     fig.tight_layout()
     return fig
         
@@ -398,7 +398,7 @@ def plot_rest_chords():
     for i in range(3):
         ind = rest_wiki[i]
         plot_profile(axs1.flat[i+3], ewld_params, ind, ewld_chordtypes_alt[ind]+" (EWLD)")
-    axs1[0,1].legend(labels=['chordtones', 'ornaments'], framealpha=1)
+    axs1[0,1].legend(labels=['chord tones', 'figuration tones'], framealpha=1)
     fig1.tight_layout()
     saveplot('chordtypes_rest1', fig1)
     
@@ -407,7 +407,7 @@ def plot_rest_chords():
     for i in range(10):
         ind = rest_wiki[i+3]
         plot_profile(axs2.flat[i], ewld_params, ind, ewld_chordtypes_alt[ind]+" (EWLD)")
-    axs2[0,1].legend(labels=['chordtones', 'ornaments'], framealpha=1)
+    axs2[0,1].legend(labels=['chord tones', 'figuration tones'], framealpha=1)
     fig2.tight_layout()
     saveplot('chordtypes_rest2', fig2)
 
