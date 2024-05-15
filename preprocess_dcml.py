@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 #import mozart_piano_sonatas.utils.feature_matrices as fm
-from utils import notetype, load_dcml_tsv, name2tpc
+from utils import notetype, load_dcml_tsv, name2tpc, numeral2tic
 #import os.path as path
 from pathlib import Path
 #from os import path, pardir
@@ -103,6 +103,7 @@ def get_chords(notes, harmonies):
     Returns the dataframe of chords and the highest used id.
     """
     key = name2tpc(harmonies.globalkey[0])
+    global_major = not harmonies.globalkey_is_minor[0]
 
     # setup the columns of the result dataframe
     chordids = np.empty(0, dtype=int)
@@ -125,14 +126,14 @@ def get_chords(notes, harmonies):
         on = harmonies.total_onset[ih]
         off = harmonies.total_offset[ih]
         label = harmonies.actual_chord_type[ih]
-        root = harmonies.root[ih] + key
+        root = harmonies.root[ih] + numeral2tic(harmonies.localkey[ih], global_major) + key
 
         # compute the corresponding notes, their pitches, and their note types
         inotes = (notes.total_offset > on) & (notes.total_onset < off)
         pitches = notes.tpc[inotes].values - root
         chord_tones = chord_types[label]
         note_types = [notetype(p, pitches, chord_tones) for p in pitches]
-        if(len(pitches) == 0):
+        if (len(pitches) == 0):
             continue
 
         # add everything to the dataframe columns
